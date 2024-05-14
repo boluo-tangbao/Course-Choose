@@ -10,6 +10,7 @@
         </template>
         <el-menu-item index="/TeacherCurriculum">我的课程</el-menu-item>
         <el-menu-item index="/TeacherGrade" disabled>成绩登入</el-menu-item>
+        <el-menu-item index="/TeacherChat" disabled>课程组聊天</el-menu-item>
       </el-sub-menu>
     </el-menu>
   </div>

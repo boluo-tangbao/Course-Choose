@@ -57,9 +57,10 @@ public interface ClassesMapper extends BaseMapper<Classes> {
             "and c.time = g.time")
     Integer selectListTotalForQuit(String studentId, String search);
 
-    @Select("select teacher_id,teacher_name,term,course_id,course_name,time,limit_num,current_num from classes " +
-            "where teacher_id = #{teacherId} " +
-            "and course_name like concat('%', #{search}, '%') ")
+    //根据老师的id搜索他教的所有课程
+    @Select("select c.Job_number,c.Course_number,cn.Course_name,Term,Credit,Time,Classroom,CurCapacity,Capacity from course c " +
+            "join course_name cn on c.Course_number=cn.Course_number where Job_number = #{teacherId} " +
+            "and cn.Course_name like concat('%', #{search}, '%') ")
     List<Classes> findListByTeacherId(String search, String teacherId);
 
     @Select("select distinct term from classes")
@@ -72,9 +73,9 @@ public interface ClassesMapper extends BaseMapper<Classes> {
             "and c.time = g.time")
     List<Classes> findListForStudentDisplay(String studentId, String term);
 
-    @Select("select count(*) from classes where term = #{term} and time = #{time} " +
+    @Select("select count(*) from classes where time = #{time} " +
             "and teacher_id = #{teacherId}")
-    Integer findIsConflicting(String term, String time, String teacherId);
+    Integer findIsConflicting(String time, String teacherId);
 
     @Select("select count(*) from classes where id = #{id}")
     Integer isKeyRepeat(String id);

@@ -4,15 +4,14 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.example.demo.entity.Department;
 import org.apache.ibatis.annotations.Select;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public interface DepartmentMapper extends BaseMapper<Department> {
-    @Select("select * from department where department = #{dep}")
+    @Select("select * from yuan_xi where department = #{dep}")
     List<Department> findDepartmentNameById(Integer dep);
 
-    @Select("select count(*) from department where department = #{department}")
+    @Select("select count(*) from yuan_xi where department = #{department}")
     Integer isKeyRepeat(Integer id);
 
     // 添加部门

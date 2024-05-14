@@ -24,11 +24,11 @@
 
       <!--表格-->
       <el-table :data="tableData" border stripe style="width: 100%;">
-        <el-table-column prop="id" label="学生学号" sortable/>
+        <el-table-column prop="studentNumber" label="学生学号" sortable/>
         <el-table-column prop="name" label="学生姓名"/>
         <el-table-column prop="usualGrade" label="平时成绩" sortable/>
         <el-table-column prop="finalGrade" label="考试成绩" sortable/>
-        <el-table-column prop="totalGrade" label="综合成绩" sortable/>
+        <el-table-column prop="score" label="综合成绩" sortable/>
 
         <el-table-column fixed="right" label="操作" width="120">
           <template #default="scope">
@@ -106,6 +106,7 @@
 import {ArrowLeft} from '@element-plus/icons-vue'
 import request from "@/utils/request";
 import * as echarts from "echarts";
+import WebSocketReconnect from "@/utils/WebSocketReconnect";
 
 export default {
   name: "TeacherGrade",
@@ -119,8 +120,9 @@ export default {
       term: sessionStorage.getItem("currentTerm"),
       time: sessionStorage.getItem("currentTime"),
       credit: sessionStorage.getItem("currentCredit"),
-      limitNum: sessionStorage.getItem("currentLimitNum"),
       currentNum: sessionStorage.getItem("currentCurrentNum"),
+      limitNum: sessionStorage.getItem("currentLimitNum"),
+
 
       tableData: [],
 
@@ -164,9 +166,9 @@ export default {
     handleGrade(row) {
       this.form.usualGrade = row.usualGrade;
       this.form.finalGrade = row.finalGrade;
-      this.title = row.id + "-" + row.name + "的成绩信息";
+      this.title = row.studentNumber + "-" + row.name + "的成绩信息";
 
-      this.row.studentId = row.id;
+      this.row.studentId = row.studentNumber;
       this.row.teacherId = this.teacherId;
       this.row.courseId = this.courseId;
       this.row.term = this.term;
@@ -174,8 +176,8 @@ export default {
       this.dialogVisible = true;
     },
     save() {
-      this.row.usualGrade = this.form.usualGrade;
-      this.row.finalGrade = this.form.finalGrade;
+      this.row.usualGrade = parseInt(this.form.usualGrade);
+      this.row.finalGrade = parseInt(this.form.finalGrade);
       console.log(this.row)
       request.post("/grade/logging", this.row).then(res => {
         console.log(res);
@@ -235,6 +237,30 @@ export default {
           this.$message({
             type: 'success',
             message: '综合成绩更新成功'
+          })
+          this.needToUpdate = false;
+          this.load();
+          this.dialogVisible2 = false;
+        } else {
+          this.$message({
+            type: 'error',
+            message: res.msg
+          })
+        }
+      })
+      request.get("/grade/updateGPA", {
+        params: {
+          term: this.term,
+          courseId: this.courseId,
+          teacherId: this.teacherId,
+          time: this.time
+        }
+      }).then(res => {
+        console.log(res);
+        if (res.code === '0') {
+          this.$message({
+            type: 'success',
+            message: '绩点更新成功'
           })
           this.needToUpdate = false;
           this.load();
@@ -330,7 +356,7 @@ export default {
         for (let i = 0; i < this.tableData.length; i++) {
           usualSum += this.tableData[i].usualGrade;
           finalSum += this.tableData[i].finalGrade;
-          totalSum += this.tableData[i].totalGrade;
+          totalSum += this.tableData[i].score;
         }
         console.log(usualSum)
         console.log(finalSum)
@@ -348,7 +374,7 @@ export default {
         } else if (which === 2) {
           t = this.tableData[i].finalGrade
         } else {
-          t = this.tableData[i].totalGrade
+          t = this.tableData[i].score
         }
         if (t >= 90 && t <= 100) {
           distributionData[0]["value"]++;

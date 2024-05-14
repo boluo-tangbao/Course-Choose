@@ -1,21 +1,32 @@
 package com.example.demo.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.github.jeffreyning.mybatisplus.anno.MppMultiId;
 import lombok.Data;
 
-@TableName("grade")
+import javax.persistence.*;
+
+@Entity
+@Table(name="student_course")
 @Data
 public class Grade {
-    @TableId(type = IdType.AUTO)
-    private Integer id;
+    @Id
+    //private Integer id;
+    @MppMultiId // 复合主键
+    @TableField("Student_number")
     private String studentId;
+    @MppMultiId // 复合主键
+    @TableField("Term")
     private String term;
+    @MppMultiId // 复合主键
+    @TableField("Course_number")
     private String courseId;
+    @TableField("Job_number")
     private String teacherId;
-    private String time;
+    @TableField("Time")
+    private String time;   //需要在别的地方进行记录
     private Integer usualGrade;
     private Integer finalGrade;
-    private Integer totalGrade;
+    private Integer Score;
+    private Double Grade_point;
 }

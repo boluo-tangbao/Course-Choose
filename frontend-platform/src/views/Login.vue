@@ -33,7 +33,7 @@ export default {
       Avatar,
       Lock,
       bg: {
-        backgroundImage: "url(" + require("../assets/loginBg.jpg") + ")",
+        backgroundImage: "url(" + require("../assets/tushu.jpg") + ")",
         backgroundRepeat: 'no-repeat',
         backgroundSize: "cover",
         minHeight: "calc(100vh - 1000px)",
@@ -55,32 +55,7 @@ export default {
     login() {
       this.$refs['form'].validate((valid) => {
         if (valid) {
-          if (this.form.id.length == 8) { // 学生登录
-            request.post("/student/login", this.form).then(res => {
-              if (res.code === '0') {
-                this.$message({
-                  type: "success",
-                  message: "登录成功"
-                })
-                request.get("/department/forHeader", {
-                  params: {
-                    dep: res.data.department
-                  }
-                }).then(res2 => {
-                  sessionStorage.setItem("currentDepName", "你好，" + res2.data[0].departmentName + "，")
-                })
-                sessionStorage.setItem("currentId", res.data.id)
-                sessionStorage.setItem("currentName", res.data.name)
-                sessionStorage.setItem("currentDep",res.data.department)
-                this.$router.push("/student"); // 登录成功之后进行页面跳转，跳转到主页
-              } else {
-                this.$message({
-                  type: "error",
-                  message: res.msg
-                })
-              }
-            })
-          } else if (this.form.id.length == 3) { // 教师或管理员登录
+          if (this.form.id.length == 5) { // 教师或管理员登录
             request.post("/teacher/login", this.form).then(res => {
               if (res.code === '0') {
                 this.$message({
@@ -107,18 +82,19 @@ export default {
               } else {
                 this.$message({
                   type: "error",
-                  message: res.msg
+                  message: "输入密码错误或账户不对!"
                 })
               }
             })
           } else {
             this.$message({
               type: "error",
-              message: "用户名不合法"
+              message: "用户名不合法"+this.form.id
             })
           }
         }
-      })
+      });
+      //console.log(this.form.id);
     }
   }
 }

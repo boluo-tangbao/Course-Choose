@@ -1,8 +1,10 @@
 package com.example.demo.controller;
 
 import com.example.demo.common.Result;
+import com.example.demo.mapper.TeacherSingleCourseMapper;
 import com.example.demo.entity.Classes;
 import com.example.demo.mapper.ClassesMapper;
+import com.example.demo.pojo.TeacherSingleCourse;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -16,6 +18,8 @@ import java.util.Map;
 public class ClassesController {
     @Resource
     ClassesMapper classesMapper;
+    @Resource
+    TeacherSingleCourseMapper teacherSingleCourseMapper;
 
     //该方法返回到前端的是HashMap，出现未知原因无法实现分页，往后的页面若存在多表查询，则抛弃分页效果
     @GetMapping
@@ -69,13 +73,13 @@ public class ClassesController {
     @PostMapping
     public Result<?> save(@RequestBody Classes classes) {
         if (classesMapper.isKeyRepeat(classes.getId()).intValue() != 0) {
-            return Result.error("-1", "班级号已存在");
+            return Result.error("-1");
         }
         // 判断时间是否冲突
-        Integer res = classesMapper.findIsConflicting(classes.getTerm(), classes.getTime(), classes.getTeacherId());
+        Integer res = classesMapper.findIsConflicting( classes.getTime(), classes.getJobNumber());
         if(res.intValue() != 0)
         {
-            return Result.error("-1","新增班级失败，该教师时间冲突");
+            return Result.error("-1");
         }
         classesMapper.insert(classes);
         return Result.success();
@@ -84,10 +88,10 @@ public class ClassesController {
     @PutMapping
     public Result<?> update(@RequestBody Classes classes) {
         // 判断时间是否冲突
-        Integer res = classesMapper.findIsConflicting(classes.getTerm(), classes.getTime(), classes.getTeacherId());
+        Integer res = classesMapper.findIsConflicting( classes.getTime(), classes.getJobNumber());
         if(res.intValue() != 0)
         {
-            return Result.error("-1","更新失败，该教师时间冲突");
+            return Result.error("-1");
         }
         classesMapper.updateById(classes);
         return Result.success();
@@ -110,10 +114,31 @@ public class ClassesController {
         return Result.success(res);
     }
 
-    @GetMapping("/forTeacher")
+/*    @GetMapping("/forTeacher")
     private Result<?> findForTeacher(@RequestParam(defaultValue = "") String search,
                                      @RequestParam(defaultValue = "") String teacherId) {
         List<Classes> data = classesMapper.findListByTeacherId(search, teacherId);
+
+*//*        List<CourseName> data1=courseNameMapper.findCourseByTeacherId(search,teacherId);
+        for (Classes c : data) {
+            for (CourseName c1 : data1) {
+                if (c.getId().equals(c1.getCourseNumber())) {
+                    c.setCourseName(c1.getName());
+                    c.setId(c1.getCourseNumber());
+                }
+            }
+        }*//*
+        Integer total = data.size();
+        Map<String, Object> res = new HashMap<>();
+        res.put("list", data);
+        res.put("total", total);
+        return Result.success(res);
+    }*/
+
+    @GetMapping("/forTeacher")
+    private Result<?> findForTeacher(@RequestParam(defaultValue = "") String search,
+                                     @RequestParam(defaultValue = "") String teacherId) {
+        List<TeacherSingleCourse> data = teacherSingleCourseMapper.findForTeacher(teacherId, search);
         Integer total = data.size();
         Map<String, Object> res = new HashMap<>();
         res.put("list", data);

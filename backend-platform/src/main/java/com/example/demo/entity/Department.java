@@ -1,14 +1,19 @@
 package com.example.demo.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
 
-@TableName("department")
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "yuan_xi")
 @Data
 public class Department {
-    @TableId(value = "department", type = IdType.AUTO)
+    @Id
+    @Value("Department")
     private Integer department;
+    @Value("Department_name")
     private String departmentName;
 }

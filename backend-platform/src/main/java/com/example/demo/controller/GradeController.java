@@ -2,8 +2,8 @@ package com.example.demo.controller;
 
 import com.example.demo.common.Result;
 import com.example.demo.entity.Grade;
-import com.example.demo.entity.GradePlus;
-import com.example.demo.entity.GradeWithStudentName;
+import com.example.demo.pojo.GradePlus;
+import com.example.demo.pojo.GradeWithStudentName;
 import com.example.demo.mapper.ClassesMapper;
 import com.example.demo.mapper.GradeMapper;
 import org.springframework.web.bind.annotation.*;
@@ -34,19 +34,19 @@ public class GradeController {
         // 查询返回一个整数，若非0，说明不满足选课条件
         Integer res = classesMapper.isFull(grade.getTerm(), grade.getCourseId(), grade.getTeacherId(), grade.getTime());
         if (res.intValue() != 0) {
-            return Result.error("-1", "选课失败，选课人数已满");
+            return Result.error("-1");
         }
         res = gradeMapper.findIsChosen(grade.getStudentId(), grade.getTerm(), grade.getCourseId(), grade.getTeacherId(), grade.getTime());
         if (res.intValue() != 0) {
-            return Result.error("-2", "选课失败，你已选修过该课程");
+            return Result.error("-2");
         }
         res = gradeMapper.findIsRepeat(grade.getStudentId(), grade.getTerm(), grade.getCourseId());
         if (res.intValue() != 0) {
-            return Result.error("-3", "选课失败，同一学期不能重复选择同一课程");
+            return Result.error("-3");
         }
         res = gradeMapper.findIsConflicting(grade.getStudentId(), grade.getTerm(), grade.getTime());
         if (res.intValue() != 0) {
-            return Result.error("-4", "选课失败，你的时间冲突");
+            return Result.error("-4");
         }
         return Result.success();
     }
@@ -71,7 +71,7 @@ public class GradeController {
                             @RequestParam(defaultValue = "") String time) {
         Integer res = gradeMapper.findCertainId(term, courseId, teacherId, studentId, time);
         if (res == null) {
-            return Result.error("-1", "已进行考核，禁止退课！");
+            return Result.error("-1");
         }
         classesMapper.deleteOneStudent(term, courseId, teacherId, time);
         return Result.success(res);
@@ -98,6 +98,8 @@ public class GradeController {
 
     @PostMapping("/logging")
     public Result<?> logging(@RequestBody Grade grade) {
+        //System.out.println(grade.getTerm()+grade.getCourseId()+ grade.getTeacherId()+grade.getStudentId()+
+        // grade.getTime()+grade.getUsualGrade()+grade.getFinalGrade());
         Integer res = gradeMapper.updateByLogging(grade.getTerm(), grade.getCourseId(), grade.getTeacherId(), grade.getStudentId(), grade.getTime(), grade.getUsualGrade(), grade.getFinalGrade());
         return Result.success(res);
     }
@@ -110,6 +112,15 @@ public class GradeController {
                             @RequestParam(defaultValue = "") Double usualGradeProportion,
                             @RequestParam(defaultValue = "") Double finalGradeProportion) {
         Integer res = gradeMapper.updateTotal(term, courseId, teacherId, time, usualGradeProportion, finalGradeProportion);
+        return Result.success(res);
+    }
+
+    @GetMapping("/updateGPA")
+    public Result<?> updateGPA(@RequestParam(defaultValue = "") String term,
+                            @RequestParam(defaultValue = "") String courseId,
+                            @RequestParam(defaultValue = "") String teacherId,
+                            @RequestParam(defaultValue = "") String time) {
+        Integer res = gradeMapper.updateGPA(term, courseId, teacherId, time);
         return Result.success(res);
     }
 

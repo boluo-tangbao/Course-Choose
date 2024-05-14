@@ -53,10 +53,10 @@ public class Result<T> {
         return result;
     }
 
-    public static Result error(String code, String msg) {
+    public static Result error(String code) {
         Result result = new Result();
         result.setCode(code);
-        result.setMsg(msg);
+        //result.setMsg(msg);
         return result;
     }
 }

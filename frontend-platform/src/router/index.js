@@ -14,6 +14,7 @@ import TeacherCurriculum from "@/views/TeacherCurriculum";
 import TeacherGrade from "@/views/TeacherGrade";
 import ManageClasses from "@/views/ManageClasses";
 import ManageDepartment from "@/views/ManageDepartment";
+import TeacherChat from "@/views/TeacherChat.vue";
 
 const routes = [
     {
@@ -97,6 +98,11 @@ const routes = [
                 path: '/teacherGrade',
                 name: 'TeacherGrade',
                 component: TeacherGrade
+            },
+            {
+                path: '/teacherChat',
+                name: 'TeacherChat',
+                component: TeacherChat
             }
         ]
     }
